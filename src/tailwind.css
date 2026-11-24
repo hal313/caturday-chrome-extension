@@ -1,0 +1,7 @@
+/*
+ * Tailwind input. Built to app/styles/main.css with `npm run build:css`.
+ * The built file is committed so app/ loads as an unpacked extension without a build step.
+ */
+@import "tailwindcss" source(none);
+
+@source "../app/**/*.{html,js}";

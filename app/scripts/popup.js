@@ -1,27 +1,72 @@
-/* global $ */
+import { getSettings } from './settings.js';
 
-(function() {
-  'use strict';
+const API_URL = 'https://api.thecatapi.com/v1/images/search';
 
-  // Invoked when jQuery is ready
-  $(document).ready(function onReady() {
+const image = document.getElementById('main-image');
+const status = document.getElementById('status');
+const nextButton = document.getElementById('button-next');
+const optionsButton = document.getElementById('button-options');
 
-    /**
-     * Populates an image.
-     */
-    var populateImage = function populateImage() {
-        // The image URL (with a cachebust)
-        var imageUrl = 'https://thecatapi.com/api/images/get?format=src&type=gif&cachebust=' + new Date().getTime();
-        // NOTE: Use this for testing purposes; the dimensions can change in order to test images of different sizes
-        // var imageUrl = 'https://via.placeholder.com/350x150';
+/**
+ * Shows a status message in place of the image (or hides it when empty).
+ *
+ * @param {String} message the message to show.
+ */
+function showStatus(message) {
+  status.textContent = message;
+  status.hidden = !message;
+  image.hidden = Boolean(message);
+}
 
-        $('#main-image').attr('src', imageUrl);
-      };
+/**
+ * Asks the cat API for a random image URL.
+ *
+ * @param {Boolean} animatedOnly true for GIFs only; false for still images.
+ * @return {Promise<String>} the image URL.
+ */
+async function fetchImageUrl(animatedOnly) {
+  const params = new URLSearchParams({ 'mime_types': animatedOnly ? 'gif' : 'jpg,png' });
+  const response = await fetch(`${API_URL}?${params}`, { cache: 'no-store' });
+  if (!response.ok) {
+    throw new Error(`Cat API responded with ${response.status}`);
+  }
+  const [result] = await response.json();
+  if (!result || !result.url) {
+    throw new Error('Cat API returned no image');
+  }
+  return result.url;
+}
 
-    // The "next" button handler
-    $('#button-next').click(populateImage);
+/**
+ * Loads a new cat into the popup.
+ */
+async function populateImage() {
+  nextButton.disabled = true;
+  showStatus('Finding a cat…');
+  try {
+    const { animatedOnly } = await getSettings();
+    const url = await fetchImageUrl(animatedOnly);
+    await new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = () => reject(new Error(`Could not load ${url}`));
+      image.src = url;
+    });
+    showStatus('');
+  } catch (error) {
+    console.error(error);
+    showStatus('The cats are napping. Try again in a moment.');
+  } finally {
+    nextButton.disabled = false;
+  }
+}
 
-    // Populate the image (initial display)
+nextButton.addEventListener('click', populateImage);
+optionsButton.addEventListener('click', () => chrome.runtime.openOptionsPage());
+
+getSettings().then(({ loadOnOpen }) => {
+  if (loadOnOpen) {
     populateImage();
-  });
-})();
+  } else {
+    showStatus('Press the button for a cat.');
+  }
+});

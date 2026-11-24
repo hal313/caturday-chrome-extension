@@ -1,4 +1,3 @@
 tasks:
- - init: npm install -g grunt && npm install
- - command: npm install && npm start
- - command: npm install && npm run build && gp preview $(gp url)mini-browser/workspace/caturday-chrome-extension/dist/popup.html
+ - init: npm install
+   command: npm start
