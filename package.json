@@ -1,42 +1,35 @@
 {
   "name": "caturday-chrome-extension",
   "description": "Chrome extension for showing cats on demand",
-  "version": "0.0.33",
-  "dependencies": {},
+  "version": "1.0.0",
   "scripts": {
-    "start": "grunt debug",
-    "build": "grunt build",
-    "release": "grunt release",
+    "start": "npm run watch:css",
+    "build": "npm run build:css",
+    "build:css": "tailwindcss -i src/tailwind.css -o app/styles/main.css --minify",
+    "watch:css": "tailwindcss -i src/tailwind.css -o app/styles/main.css --watch",
+    "lint": "eslint .",
+    "release": "npm run lint && npm run build && node scripts/package.mjs",
+    "version": "node scripts/sync-version.mjs && git add app/manifest.json",
     "deploy": "echo npx chrome-webstore-upload-cli upload --auto-publish --source package/caturday-`node -e \"console.log(require('./package.json').version);\"`.zip --extension-id mcciciniemdaoljfnhgfahdhhkhefcfp --client-id=$CLIENT_ID --client-secret=$CLIENT_SECRET --refresh-token=$REFRESH_TOKEN"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/hal313/caturday-chrome-extension.git"
   },
-  "devDependencies": {
-    "grunt": "^1.3.0",
-    "grunt-bump": "^0.8.0",
-    "grunt-chrome-manifest": "^0.3.0",
-    "grunt-concurrent": "^3.0.0",
-    "grunt-contrib-clean": "^2.0.0",
-    "grunt-contrib-compress": "^2.0.0",
-    "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-cssmin": "^4.0.0",
-    "grunt-contrib-htmlmin": "^3.1.0",
-    "grunt-contrib-jshint": "^3.0.0",
-    "grunt-contrib-uglify": "^5.0.0",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-usemin": "^3.1.1",
-    "jshint-stylish": "^2.2.1",
-    "load-grunt-tasks": "^5.1.0",
-    "time-grunt": "^2.0.0"
-  },
   "license": "MIT",
-  "engines": {
-    "node": ">=0.8.0"
-  },
   "optionalDependencies": {
     "chrome-webstore-upload-cli": "^1.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^6.0.1",
+    "@tailwindcss/cli": "^4.3.5",
+    "adm-zip": "^0.6.1",
+    "eslint": "^10.15.0",
+    "globals": "^17.14.0",
+    "tailwindcss": "^4.3.5"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

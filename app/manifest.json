@@ -1,20 +1,27 @@
 {
+  "manifest_version": 3,
   "name": "__MSG_appName__",
-  "version": "0.0.33",
-  "manifest_version": 2,
+  "version": "1.0.0",
   "description": "__MSG_appDescription__",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnt/TZtwStKPEnXZIAvRqFZ1wGAQ3E0MD/UjIlS0YKOfFBG0XyjG1Vy2KIDK3kAieEKM0ApRcgFjK5nOeX3rz3Ww63vdPdrehSB3SCQx82S8iNN1/ZjjoJqw6xKjnndsjzEFLWpB8PqJI0AeQrrmuoq3+NOZp8vR5JVbtouMKb4VH+S5exNz3XlcYb39/LtIYcAyMAdPGTG5gif31lP2ALnqAporQtHyReqFckj0WQtAE5Lakmdg5GAFXoashDFpKLcM2Z8F8epbjPjEFUyIw+w83VwYOIGJapTah0dRnet/E/BihuaR6I5tjrUPrFMLGSF6pMBkUOXpF1wlWoP6KAwIDAQAB",
+  "default_locale": "en",
   "icons": {
     "16": "images/icon-16.png",
     "128": "images/icon-128.png"
   },
-  "default_locale": "en",
-  "background": {},
-  "browser_action": {
+  "action": {
     "default_icon": {
       "19": "images/icon-19.png",
       "38": "images/icon-38.png"
     },
     "default_title": "caturday",
     "default_popup": "popup.html"
-  }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "permissions": [
+    "storage"
+  ]
 }
