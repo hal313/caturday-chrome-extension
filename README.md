@@ -1,6 +1,5 @@
 # [Caturday Chrome Extension](https://github.com/hal313/caturday-chrome-extension)
 
-[![Build Status](http://img.shields.io/travis/hal313/caturday-chrome-extension/master.svg?style=flat-square)](https://travis-ci.org/hal313/caturday-chrome-extension)
 [![Dependency Status](https://david-dm.org/hal313/caturday-chrome-extension.svg?style=flat-square)](https://david-dm.org/hal313/caturday-chrome-extension)[![DevDependency Status](https://david-dm.org/hal313/caturday-chrome-extension/dev-status.svg?style=flat-square)](https://david-dm.org/hal313/caturday-chrome-extension)
 
 
@@ -11,36 +10,47 @@ Need a break from all the depressing news? Too much work on your plate? If you a
 
 
 ## Setup
-Initial setup for any development environment.
+Requires Node.js 20 or later.
 ```bash
-npm install -g grunt-cli
 npm install
 ```
 
-## Build
-A build will generate usable artifacts in the `dist/`.
-```bash
-grunt build
-```
-
 ## Run Locally
-Running locally will constantly perform a `build` when any deployable assets change (images, CSS, JS or HTML files). This functionality works well when local extensions are installed ([Install Local Extensions](https://developer.chrome.com/extensions/getstarted#manifest)). There is no need to reload the extension every time a file is changed (for Browser Actions).
+The `app/` directory is the extension itself and can be loaded as-is: open `chrome://extensions`, turn on **Developer mode**, choose **Load unpacked** and select `app/` ([Install Local Extensions](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked)).
+
+The built Tailwind stylesheet (`app/styles/main.css`) is committed, so no build step is needed just to load the extension. While editing HTML or JS, keep the stylesheet up to date with:
 ```bash
 npm start
 ```
 
-## Debugging
-Some IDE's (WebStorm and vscode, for example) will allow for a "live preview" of HTML files. For rapid development, it may be useful to use the live preview functionality on `dist/popup.html`. While useful, this approach has its limitations - particularly when validating behavior within the Chrome Extension API and restrictions.
+## Settings Sync
+Settings are saved with `chrome.storage.sync`, so they follow you to every Chrome profile signed in to the same Google account (with sync turned on).
 
-It is recommended to use the standard debugging apprach after initial development has completed. See [here](https://developer.chrome.com/docs/extensions/mv3/tut_debugging/) for more details. Be sure to select the `dist` directory when loading the unpacked extension.
+Sync storage belongs to an extension ID. An unpacked extension normally gets a different ID on each machine, so `app/manifest.json` includes the Chrome Web Store's public `key`. That pins the unpacked ID to the store ID, `mcciciniemdaoljfnhgfahdhhkhefcfp`, everywhere. Load `app/` on two devices with the same Google account and the settings sync between them.
+
+Because the IDs match, the unpacked build and the store version share synced settings, and Chrome runs only one of them per profile. The key is stripped from the release zip, since the store rejects uploads that contain one.
+
+## Build
+Rebuilds the minified Tailwind stylesheet.
+```bash
+npm run build
+```
+
+## Lint
+```bash
+npm run lint
+```
+
+## Debugging
+See [Debugging extensions](https://developer.chrome.com/docs/extensions/get-started/tutorial/debug). Right-click the popup and choose **Inspect** to open its DevTools.
 
 ## Build For Release
-Clean the workspace, perform a build, bump the manifest version and create an archive suitable for uploading to the [Chrome Developer Dashboard](https://chrome.google.com/webstore/developer/dashboard).
-
-Note that if the build fails, it is possible that `jshint` failed; check the output contents for any violations.
+Lints, rebuilds the stylesheet and writes `package/caturday-<version>.zip` for uploading to the [Chrome Developer Dashboard](https://chrome.google.com/webstore/devconsole). The packaged `manifest.json` has the development `key` removed.
 ```bash
 npm run release
 ```
+
+Bump the version with `npm version patch` (or `minor`); `app/manifest.json` is updated to match automatically.
 
 ## Publish A Release
 Publishing release requires some additional steps ([This](https://developer.chrome.com/webstore/using_webstore_api#beforeyoubegin) is a good primer and should provide all the information needed):
@@ -71,7 +81,7 @@ Publishes are currently manual, though releases could be configured with a CD se
 In general, the steps are inspired from git-flow:
 * Create a release branch
 * Bump the version
-* Build a deployable (it is suitable to `npm run build`)
+* Build a deployable (`npm run release`)
 * Commit the version bump
 * Merge the release branch into `master`
 * Create a tag
@@ -93,8 +103,10 @@ This software is released under the [MIT Licence](https://raw.githubusercontent.
 - [Caturday](#caturday)
 - [Introduction](#introduction)
   - [Setup](#setup)
-  - [Build](#build)
   - [Run Locally](#run-locally)
+  - [Settings Sync](#settings-sync)
+  - [Build](#build)
+  - [Lint](#lint)
   - [Debugging](#debugging)
   - [Build For Release](#build-for-release)
   - [Publish A Release](#publish-a-release)

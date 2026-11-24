@@ -13,7 +13,7 @@ fi
 
 ## Bump the version
 echo Version bump
-grunt version-bump
+npm version patch --no-git-tag-version
 
 
 ## Set the version
